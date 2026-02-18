@@ -71,7 +71,7 @@ ggplot(data=penguins) +
 
 Are the Gentoo penguin body mass observations collected in our palmer penguins dataset significantly different than the mean Gentoo penguin body mass accepted in the literature? We can use the body mass value from the Encyclopedia of Life:
 
-https://eol.org/traitbank
+<https://eol.org/traitbank>
 
 Search for "Gentoo Penguin" in the search bar and you will find that the trait bank lists body mass as 5500g. Let's see what our Gentoo body mass observations look like:
 
@@ -125,7 +125,7 @@ The results of our one-sample t-test show the following components:
 
 The output p-value is much less than 0.05 (it's almost p=0). That means we reject our null hypothesis that our Gentoo body mass observations are similar to the literature value.
 
-Huh. Interesting. Remember earlier we calculated our observed mean Gentoo body mass is 5076 g. If we were writing this test for a publication we could use language like this: "We conducted a one-sample t-test to compare the body mass of Gentoo penguins measured in the field with the theoretical mean adult Gentoo body mass of 5500 g pulled from the Encyclopedia of Life trait bank. The penguin body mass measurements in this study were significantly smaller than the theoretical mean (t=-9.33; p=6.05x10^-16)." 
+Huh. Interesting. Remember earlier we calculated our observed mean Gentoo body mass is 5076 g. If we were writing this test for a publication we could use language like this: "We conducted a one-sample t-test to compare the body mass of Gentoo penguins measured in the field with the theoretical mean adult Gentoo body mass of 5500 g (Symonds and Tattersall 2010, accessed through the Encyclopedia of Life trait bank). The penguin body mass measurements in this study were significantly smaller than the theoretical mean (t=-9.33; p=6.05x10^-16)." 
 
 Maybe our penguins were hungry. If I had to guess, the Encyclopedia of Life body mass trait is probably for adult Gentoo penguins, and we include juveniles in our observations. Or perhaps the study referenced in the Encyclopedia of Life is fundamentally different from our study in some other way - sex ratio, genetic sub-population, sampling season, foraging behavior, etc. If this were actually my data and I wanted to publish on it, I'd use this as a jumping point to do some more research.
 
@@ -180,11 +180,16 @@ Now let's actually run the independent sample t-test.
 
 ```{r}
 # Base R version:
-t.test(data_for_t_test$body_mass_g ~ data_for_t_test$species)
+t_results = t.test(data_for_t_test$body_mass_g ~ data_for_t_test$species)
+t_results
+class(t_results)
+summary(t_results)
+t_results$statistic
+t_results$p.value
 
 # dplyr-friendly version:
 data_for_t_test %>% 
-  t_test(body_mass_g ~ species) 
+  t_test(body_mass_g ~ species) # var.equal = T yields Student's t-test
 ```
 
 So we can reject the null hypothesis that the means are equal, and accept the alternative hypothesis. "Adelie body mass is significantly lower than Gentoo body mass (Welch's t-test, p<0.001)."
@@ -208,7 +213,7 @@ We don't have any good examples of paired data in our penguins dataset. However,
 
 **Assessing equality of variances:** Homogeneity of variances can be checked using the Levene’s test. Note that, by default, the t_test() function does not assume equal variances; instead of the standard Student’s t-test, it uses the Welch t-test by default, which is considered the safer one. To use Student’s t-test, set `var.equal = TRUE`. The two methods give very similar results unless both the group sizes and the standard deviations are very different.
 
-In the situations where the assumptions are violated, non-parametric tests, such as the Wilcoxon test, are recommended.
+In the situations where the assumptions are violated, non-parametric tests, such as the Wilcoxon test, are recommended. Note that parametric tests (like Student's t-test) make assumptions about the parameters of the underlying data, i.e. that they are normally distributed. Non-parametric tests (like Welch's t-test) to not rely on assumptions about the data distribution, and instead operate on the ordered ranks of the dataset.
 
 ***
 

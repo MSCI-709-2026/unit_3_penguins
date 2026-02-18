@@ -19,13 +19,13 @@ cor(), cor.test(), GGally::ggpairs()
 
 ### Correlation
 
-In statistics, we can use correlation tests to evaluate the association between two or more variables. Pearson correlation (r),  measures a linear dependence between two variables (x and y). Pearson correlation is also known as a parametric correlation test because it depends on the distribution of the data. It can be used only when x and y are from a normal distribution. The plot of y = f(x) is named the linear regression curve.
+In statistics, we can use correlation tests to evaluate the association between two or more variables. Pearson correlation (r),  measures a linear dependence between two variables (x and y). Pearson correlation is also known as a parametric correlation test because it depends on the distribution of the data. It can be used only when x and y are from a normal distribution. 
 
 If your data aren't normal, you can use Kendall tau and Spearman rho, which are rank-based correlation coefficients (non-parametric).
 
 Let's see how bill length and bill depth relate to each other. This is what those two variables measure:
 
-![Credit: Allison Horst](doc/penguin_bill.jpg){width=30%}
+![Credit: Allison Horst](doc/penguin_bill.jpg){width=50%}
 
 We can start with a simple plot. For now, let's just look at our big Gentoo penguins:
 
@@ -40,6 +40,7 @@ gentoo = penguins %>%
 # Exploratory data analysis:
 glimpse(gentoo)
 summarize(gentoo)
+dim(gentoo)
 ggplot() +
   geom_point(aes(x=bill_length_mm, y=bill_depth_mm), data=gentoo)
 ```
@@ -54,7 +55,7 @@ ggplot(gentoo) +
   stat_qq(aes(sample=bill_depth_mm))
 ```
 
-Alright, those Q-Q plots look fine, so we can move onto a correlation analysis guilt-free. What is the correlation between Gentoo penguin bill length and bill depth? We can use `cor()` to calculate Pearson's r correlation coefficient. There is an `NA` in the Gentoo bill data, so we have to handle the missing data with the `use` parameter in `cor()`, otherwise the function will throw an error. You can check the documentation (`?cor`) to see the options for the use parameter. Another option would be to filter `NAs` out of your data before running it through the correlation test. You'll also note that the default correlation method is Pearson's r, but if your data weren't normal, you can use the `method` parameter in `cor()` to run the Kendall or Spearman correlation tests with sorted data. 
+Alright, those Q-Q plots look good (though maybe not great), so we can move onto a correlation analysis guilt-free, especially since we have a large sample size. What is the correlation between Gentoo penguin bill length and bill depth? We can use `cor()` to calculate Pearson's r correlation coefficient. There is an `NA` in the Gentoo bill data, so we have to handle the missing data with the `use` parameter in `cor()`, otherwise the function will throw an error. You can check the documentation (`?cor`) to see the options for the use parameter. Another option would be to filter `NAs` out of your data before running it through the correlation test. You'll also note that the default correlation method is Pearson's r, but if your data weren't normal, you can use the `method` parameter in `cor()` to run the Kendall or Spearman correlation tests with sorted data. 
 
 ```{r}
 # cor() returns just the correlation coefficient r
@@ -111,8 +112,10 @@ If we wanted to be really fancy, we can run `ggpairs()` on the complete dataset 
 
 ```{r, fig.height = 7, fig.width = 9, message=FALSE, warning=FALSE}
 penguins %>%
-  select(species, body_mass_g, ends_with("_mm")) %>% # clever way to select variables with names that end in "_mm"
-  GGally::ggpairs(aes(color = species))
+  #select(species, body_mass_g, ends_with("_mm")) %>% # clever way to select variables with names that end in "_mm"
+  select(species, where(is.numeric), -year) %>% # see ?tidyselect::language for selection helpers
+  GGally::ggpairs(aes(color = species)) +
+  theme_bw()
 ```
 
 That's a lot of information in one place. Every correlation presented in this matrix is significant (R shows this with the number of asterisks next to the correlation coefficient). That's not a huge surprise - why wouldn't different measurements on a bird's body be correlated? It seems like the correlation between body metrics is typically higher in Gentoo penguins than either Chinstrap or Adelie penguins. There's also a few relationships where the correlation of the pooled data (i.e. all three species) is negative, but each of the species-specific correlations for the same relationship is positive. This seems to be true for the relationship between bill depth and any of the other three body measurements. That's interesting, and something we'll look out for in our future statistical analyses of this dataset. 
