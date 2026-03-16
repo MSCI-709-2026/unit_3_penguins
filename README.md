@@ -21,7 +21,7 @@ Final project repo link: <https://classroom.github.com/a/xG-T2hcH>
 
 -  HW_5_penguin-taxidermy - Assigned: 3/17/2026, Due: 3/24/2026
 
-HW5 repo link: TBD
+HW5 repo link: <https://classroom.github.com/a/aXbsYr43>
 
 ***
 
